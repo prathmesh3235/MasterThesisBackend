@@ -1,11 +1,14 @@
 const express = require('express');
 const app = express();
 const dotenv = require('dotenv');
+const cors = require('cors');
+
 dotenv.config();
 
 // Middleware to parse request bodies
 app.use(express.json()); // Parses JSON bodies
 app.use(express.urlencoded({ extended: true })); // Parses URL-encoded bodies
+app.use(cors()); // Enable CORS for all routes
 
 const phasesRouter = require('./routes/phases');
 const usersRouter = require('./routes/users');
@@ -22,7 +25,6 @@ app.get('/', (req, res) => {
 app.use('/phases', phasesRouter);
 // app.use('/phases/:phaseId/potentials', potentialsRouter);
 app.use('/users', usersRouter);
-
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {

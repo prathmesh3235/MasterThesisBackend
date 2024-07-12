@@ -59,6 +59,10 @@ router.patch('/:id', async (req, res) => {
 
         // Prepare the update fields
         const fieldsToUpdate = {};
+        if(!newUsername && !newPassword) {
+            return res.status(400).json({ message: "No fields provided for update." });
+        }
+
         if (newUsername) {
             fieldsToUpdate.username = newUsername;
         }
