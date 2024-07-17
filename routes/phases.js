@@ -57,4 +57,16 @@ router.patch('/:id', async (req, res) => {
   }
 });
 
+router.post('/', async (req, res) => {
+  const { phaseNo, title, profile_info } = req.body;
+
+  try {
+    const [results] = await database.query('INSERT INTO phases (phaseNo, title, profile_info) VALUES (?, ?, ?)', [phaseNo, title, profile_info]);
+    res.status(201).json({ message: "Phase created successfully.", id: results.insertId });
+  } catch (error) {
+    console.error("Database error:", error);
+    res.status(500).json({ message: "Failed to create phase." });
+  }
+});
+
 module.exports = router;
