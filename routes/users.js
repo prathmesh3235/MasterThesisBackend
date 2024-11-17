@@ -1,7 +1,7 @@
 const express = require('express');
 const bcrypt = require('bcryptjs');
 const database = require('../utils/database');
-const tokens = require('../utils/tokens');
+const { authenticate, signToken } = require('../utils/tokens');
 
 // Create a router object
 const router = express.Router();
@@ -29,7 +29,7 @@ router.post('/login', async (req, res) => {
         userId: user.id
     };
 
-    let token = tokens.signToken(payload)
+    let token = signToken(payload)
 
     // Sign token
     res.send({ token });
@@ -37,10 +37,13 @@ router.post('/login', async (req, res) => {
 });
 
 
-router.patch('/:id', async (req, res) => {
+router.patch('/:id', authenticate,  async (req, res) => {
     const { id } = req.params; // User ID from URL parameter
     const { newUsername, newPassword, username, password } = req.body;
 
+    if (id != req.userId) {
+        res.status(401).json({ message: "You are not allowed to update this resource" });
+    }
     // First, verify the existing username and password
     try {
         const [results] = await database.query(`SELECT * FROM users WHERE id = ? and username = ?`, [id, username]);
@@ -52,10 +55,10 @@ router.patch('/:id', async (req, res) => {
         const user = results[0];
 
         // Verify current password before making changes
-        const passwordIsValid = await bcrypt.compare(password, user.password);
-        if (!passwordIsValid) {
-            return res.status(400).json({ message: "Invalid credentials." });
-        }
+        // const passwordIsValid = await bcrypt.compare(password, user.password);
+        // if (!passwordIsValid) {
+        //     return res.status(400).json({ message: "Invalid credentials." });
+        // }
 
         // Prepare the update fields
         const fieldsToUpdate = {};

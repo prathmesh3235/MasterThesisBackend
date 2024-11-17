@@ -1,11 +1,11 @@
 // Import mysql module
-const mysql = require('mysql2/promise'); // Notice mysql2/promise import
+const mysql = require('mysql2/promise');
 
 // Set up database connection
 const database = mysql.createPool({
     host: process.env.DATABASE_HOST,
     user: process.env.DATABASE_USER,
-    password: process.env.DATABASE_PASSWORD, // replace 'your_password' with your actual root password
+    password: process.env.DATABASE_PASSWORD,
     database: process.env.DATABASE_SCHEMA
 });
 
