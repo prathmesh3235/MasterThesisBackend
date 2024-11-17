@@ -12,7 +12,7 @@ app.use(cors()); // Enable CORS for all routes
 
 const phasesRouter = require('./routes/phases');
 const usersRouter = require('./routes/users');
-const potentialsRouter = require('./routes/potential');
+const potentialsRouter = require('./routes/ai_potential');
 
 app.get('/', (req, res) => {
   const result = {
@@ -25,6 +25,7 @@ app.get('/', (req, res) => {
 app.use('/phases', phasesRouter);
 // app.use('/phases/:phaseId/potentials', potentialsRouter);
 app.use('/users', usersRouter);
+app.use('/potential', potentialsRouter);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
