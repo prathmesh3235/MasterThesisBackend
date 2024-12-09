@@ -3,16 +3,24 @@ const router = express.Router();
 const database = require('../utils/database');
 const { authenticate } = require('../utils/tokens');
 
+
+// Get complete profile data for a phase
 // Get complete profile data for a phase
 router.get('/:phaseId', async (req, res) => {
     try {
         const { phaseId } = req.params;
 
-        // Get all sections for the phase with a single query
+        // Get phase details first
+        const [phaseDetails] = await database.query(
+            'SELECT title, phaseNo FROM phases WHERE id = ?',
+            [phaseId]
+        );
+
+        // Get all sections with phase info
         const [sections] = await database.query(
-            `SELECT ps.*, pd.title as phase_title 
+            `SELECT ps.*, p.title as phase_title, p.phaseNo 
              FROM profile_sections ps
-             LEFT JOIN phases pd ON ps.phase_id = pd.id
+             JOIN phases p ON ps.phase_id = p.id
              WHERE ps.phase_id = ? 
              ORDER BY ps.display_order`,
             [phaseId]
@@ -24,12 +32,11 @@ router.get('/:phaseId', async (req, res) => {
             });
         }
 
-        // Format the response
-        const response = {
+        res.json({
+            phaseDetails: phaseDetails[0],
             sections: sections
-        };
-
-        res.json(response);
+        });
+        
     } catch (error) {
         console.error('Database error:', error);
         res.status(500).json({ 

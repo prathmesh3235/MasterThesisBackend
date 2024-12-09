@@ -54,4 +54,24 @@ router.patch('/:id', async (req, res) => {
   }
 });
 
+// Delete a potential
+router.delete('/:id', async (req, res) => {
+  const { id } = req.params;
+  try {
+    const [results] = await database.query(
+      'DELETE FROM potential WHERE id = ?',
+      [id]
+    );
+    
+    if (results.affectedRows === 0) {
+      return res.status(404).json({ message: "Potential not found." });
+    }
+    
+    res.json({ message: "Potential deleted successfully." });
+  } catch (error) {
+    console.error("Database error:", error);
+    res.status(500).json({ message: "Failed to delete potential." });
+  }
+});
+
 module.exports = router;
