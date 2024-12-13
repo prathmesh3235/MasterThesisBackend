@@ -10,10 +10,13 @@ app.use(express.json()); // Parses JSON bodies
 app.use(express.urlencoded({ extended: true })); // Parses URL-encoded bodies
 app.use(cors()); // Enable CORS for all routes
 
+
 const phasesRouter = require('./routes/phases');
 const usersRouter = require('./routes/users');
 const potentialsRouter = require('./routes/ai_potential');
 const profileRouter = require('./routes/profile');
+const matrixRouter = require('./routes/matrix');
+
 
 app.get('/', (req, res) => {
   const result = {
@@ -28,6 +31,7 @@ app.use('/phases', phasesRouter);
 app.use('/users', usersRouter);
 app.use('/potential', potentialsRouter);
 app.use('/profile', profileRouter);
+app.use('/matrix', matrixRouter);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
