@@ -27,7 +27,25 @@ router.get('/phase/:phaseId', async (req, res) => {
     }
 });
 
-// Update matrix category (admin only)
+// Update category title
+router.patch('/category-titles/:phaseId', authenticate, async (req, res) => {
+    const { phaseId } = req.params;
+    const { categoryType, title } = req.body;
+    try {
+        await database.query(
+            `UPDATE matrix_categories 
+             SET category_title = ?
+             WHERE phase_id = ? AND category_type = ?`,
+            [title, phaseId, categoryType]
+        );
+        res.json({ message: 'Category title updated successfully' });
+    } catch (error) {
+        console.error('Database error:', error);
+        res.status(500).json({ message: 'Failed to update category title.' });
+    }
+});
+
+// Update matrix content
 router.patch('/categories/:id', authenticate, async (req, res) => {
     const { id } = req.params;
     const { title, description, detail_text } = req.body;
@@ -38,26 +56,33 @@ router.patch('/categories/:id', authenticate, async (req, res) => {
              WHERE id = ?`,
             [title, description, detail_text, id]
         );
-        res.json({ message: 'Category updated successfully' });
+        res.json({ message: 'Matrix content updated successfully' });
     } catch (error) {
         console.error('Database error:', error);
-        res.status(500).json({ message: 'Failed to update category.' });
+        res.status(500).json({ message: 'Failed to update content.' });
     }
 });
 
-// Delete matrix category (admin only)
-router.delete('/categories/:id', authenticate, async (req, res) => {
-    const { id } = req.params;
+
+// In your matrix.js routes file
+router.patch('/category-titles/:phaseId', authenticate, async (req, res) => {
+    const { phaseId } = req.params;
+    const { categoryType, title } = req.body;
     try {
-        await database.query('DELETE FROM matrix_categories WHERE id = ?', [id]);
-        res.json({ message: 'Category deleted successfully' });
+        await database.query(
+            `UPDATE matrix_categories 
+             SET category_title = ?
+             WHERE phase_id = ? AND category_type = ?`,
+            [title, phaseId, categoryType]
+        );
+        res.json({ message: 'Category title updated successfully' });
     } catch (error) {
         console.error('Database error:', error);
-        res.status(500).json({ message: 'Failed to delete category.' });
+        res.status(500).json({ message: 'Failed to update category title.' });
     }
 });
 
-// Add new matrix category (admin only)
+// Add new matrix content
 router.post('/categories', authenticate, async (req, res) => {
     const { phase_id, category_type, title, description, detail_text } = req.body;
     try {
@@ -67,10 +92,22 @@ router.post('/categories', authenticate, async (req, res) => {
              VALUES (?, ?, ?, ?, ?)`,
             [phase_id, category_type, title, description, detail_text]
         );
-        res.status(201).json({ id: result.insertId });
+        res.json({ id: result.insertId });
     } catch (error) {
         console.error('Database error:', error);
-        res.status(500).json({ message: 'Failed to create category.' });
+        res.status(500).json({ message: 'Failed to create content.' });
+    }
+});
+
+// Delete matrix content
+router.delete('/categories/:id', authenticate, async (req, res) => {
+    const { id } = req.params;
+    try {
+        await database.query('DELETE FROM matrix_categories WHERE id = ?', [id]);
+        res.json({ message: 'Content deleted successfully' });
+    } catch (error) {
+        console.error('Database error:', error);
+        res.status(500).json({ message: 'Failed to delete content.' });
     }
 });
 
