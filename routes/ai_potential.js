@@ -239,4 +239,44 @@ router.patch('/:id/rating', authenticate, async (req, res) => {
   }
 });
 
+// Get top-rated potentials across ALL phases
+router.get('/top-rated/all', async (req, res) => {
+  try {
+    // For "most recent" single rating, we do similar logic with a LEFT JOIN and subquery:
+    const [results] = await database.query(`
+    SELECT 
+    p.id, 
+    p.phaseId, 
+    p.category, 
+    p.title, 
+    p.description, 
+    pr.rating,
+    pr.user_id AS ratedBy,
+    ph.phaseNo,
+    ph.title AS phaseTitle
+  FROM potential p
+  LEFT JOIN phases ph ON ph.id = p.phaseId
+  LEFT JOIN potential_ratings pr ON pr.potential_id = p.id
+    AND pr.id = (
+      SELECT pr2.id FROM potential_ratings pr2
+      WHERE pr2.potential_id = p.id
+      ORDER BY pr2.created_at DESC LIMIT 1
+    )
+  ORDER BY pr.rating DESC;
+    `);
+
+    // to display only potentials that have a rating, filter out null rating:
+    // const filtered = results.filter(r => r.rating !== null);
+
+    res.json(results); 
+  } catch (error) {
+    console.error("Database error (top-rated):", error);
+    res.status(500).json({
+      message: "Failed to retrieve top-rated potentials.",
+      error: error.message
+    });
+  }
+});
+
+
 module.exports = router;
