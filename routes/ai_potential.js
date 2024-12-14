@@ -266,9 +266,9 @@ router.get('/top-rated/all', async (req, res) => {
     `);
 
     // to display only potentials that have a rating, filter out null rating:
-    // const filtered = results.filter(r => r.rating !== null);
+    const filtered = results.filter(r => r.rating !== null);
 
-    res.json(results); 
+    res.json(filtered); 
   } catch (error) {
     console.error("Database error (top-rated):", error);
     res.status(500).json({
