@@ -17,6 +17,8 @@ const potentialsRouter = require('./routes/ai_potential');
 const profileRouter = require('./routes/profile');
 const matrixRouter = require('./routes/matrix');
 const productDevelopmentRouter = require('./routes/product-development-sections');
+const subphasesRouter = require('./routes/subphases');
+
 
 app.get('/', (req, res) => {
   const result = {
@@ -33,6 +35,9 @@ app.use('/potential', potentialsRouter);
 app.use('/profile', profileRouter);
 app.use('/matrix', matrixRouter);
 app.use('/product-development-sections', productDevelopmentRouter);
+app.use('/phases', subphasesRouter); 
+
+
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
